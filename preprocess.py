@@ -76,9 +76,9 @@ x = layers.Conv2D(32, (3, 3), strides=(2, 2), padding= 'same', activation='relu'
 
 
 #%% design custom convolutional neural network to predict the bounding box and label
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+# import tensorflow as tf
+# from tensorflow import keras
+# from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 model = Sequential([
     layers.Conv2D(32, (3, 3), strides=(2, 2), padding= 'same', activation='relu', input_shape=(224, 224, 3)),
@@ -94,3 +94,45 @@ model = Sequential([
 
 model.compile(optimizer='adam', loss='binary_crossentropy')
 model.summary()
+# %%
+#code to train the model
+history = model.fit(X_train, Y_train, epochs=10, batch_size=16, validation_data=(X_test, Y_test))
+# %%
+#evaluate the model
+model.evaluate(X_test, Y_test)
+# %%
+#save the model
+model.save('apple_detector_model.h5')       
+# %%
+#plot the training and validation loss
+plt.plot(history.history['loss'], label='train loss')
+plt.plot(history.history['val_loss'], label='val loss')
+plt.legend()
+plt.show()  
+# %%
+#make predictions
+predictions = model.predict(X_test)
+# %%
+#show the first prediction
+predictions[0]
+# %%
+#function to plot the image with the bounding box
+def plot_image_with_bbox(image, bbox, label):
+    plt.imshow(image)
+    ax = plt.gca()
+    if label == 1:
+        rect = plt.Rectangle((bbox[0], bbox[1]), bbox[2], bbox[3], fill=False, color='red')
+        ax.add_patch(rect)
+        plt.text(bbox[0], bbox[1], 'Apple', color='white', fontsize=12, backgroundcolor='red')
+    else:
+        plt.text(10, 10, 'No Apple', color='black', fontsize=12, backgroundcolor='white')
+    plt.axis('off')
+    plt.show()
+# %%#plot the first test image with the predicted bounding box
+iix=3
+pred_bbox = predictions[iix][1:]
+#denormalize the bounding box
+img_width, img_height = X_test[iix].shape[1], X_test[iix].shape[0]
+bbox = [pred_bbox[0]*img_width, pred_bbox[1]*img_height, pred_bbox[2]*img_width, pred_bbox[3]*img_height]   
+plot_image_with_bbox(X_test[iix], bbox, round(predictions[iix][0]))
+# %%
