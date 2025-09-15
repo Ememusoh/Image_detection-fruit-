@@ -44,6 +44,13 @@ python preprocess.py
 - The trained model is saved as `apple_detector_model.h5`.
 - You can use this model for inference or further training.
 
+
+## Example Prediction
+
+Below is a sample prediction result from the model:
+
+![Sample Prediction](predictions/prediction_2.png)
+
 ## Usage
 - Modify and run `preprocess.py` to preprocess your data.
 - Use the trained model for apple detection tasks.

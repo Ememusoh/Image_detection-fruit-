@@ -127,12 +127,19 @@ def plot_image_with_bbox(image, bbox, label):
     else:
         plt.text(10, 10, 'No Apple', color='black', fontsize=12, backgroundcolor='white')
     plt.axis('off')
-    plt.show()
-# %%#plot the first test image with the predicted bounding box
-iix=3
-pred_bbox = predictions[iix][1:]
-#denormalize the bounding box
-img_width, img_height = X_test[iix].shape[1], X_test[iix].shape[0]
-bbox = [pred_bbox[0]*img_width, pred_bbox[1]*img_height, pred_bbox[2]*img_width, pred_bbox[3]*img_height]   
-plot_image_with_bbox(X_test[iix], bbox, round(predictions[iix][0]))
+    # plt.show()  # Commented out for saving
+    return plt
+# %% Save predictions as images
+output_dir = 'predictions'
+os.makedirs(output_dir, exist_ok=True)
+num_to_save = min(5, len(predictions), len(X_test))  # Save up to 5, but not more than available
+for iix in range(num_to_save):
+    pred_bbox = predictions[iix][1:]
+    img_width, img_height = X_test[iix].shape[1], X_test[iix].shape[0]
+    bbox = [pred_bbox[0]*img_width, pred_bbox[1]*img_height, pred_bbox[2]*img_width, pred_bbox[3]*img_height]
+    label = round(predictions[iix][0])
+    plt_obj = plot_image_with_bbox(X_test[iix], bbox, label)
+    plt_obj.savefig(os.path.join(output_dir, f'prediction_{iix+1}.png'), bbox_inches='tight', pad_inches=0)
+    plt_obj.close()
+
 # %%
